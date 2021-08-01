@@ -2,12 +2,12 @@ import cv2
 import numpy as np
 
 stats = ["blue-eyes" , "blue-hair", "braid" , "hat", "red-eyes"]
-waifus = ["waifu1", "waifu2", "waifu3", "waifu4", "waifu5", "waifu6"]
+waifus = ["file_0"]
 
 for waifu in waifus:
   matchingStats = []
   for stat in stats:
-    img = cv2.imread(waifu + ".png") #main image
+    img = cv2.imread(waifu + ".webp") #main image
     img = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
 
     template = cv2.imread(stat + ".png") #subimage
