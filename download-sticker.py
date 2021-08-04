@@ -150,12 +150,18 @@ class StickerDownloader:
 async def main():
     downloader = StickerDownloader(TOKEN)
     print('Welcome to Telegram Downloader..')
+    urls = [
+        "https://t.me/addstickers/deck_46518858_by_WaifuCardsBot",
+        "https://t.me/addstickers/deck_66307063_by_WaifuCardsBot",
+        "https://t.me/addstickers/deck_200822246_by_WaifuCardsBot",
+        "https://t.me/addstickers/deck_213110784_by_WaifuCardsBot",
+        "https://t.me/addstickers/deck_218538488_by_WaifuCardsBot",
+        "https://t.me/addstickers/deck_543738428_by_WaifuCardsBot"
+    ]
     names = []
 
-    while True:
-        name = input("Enter sticker_set url (leave blank to stop): ").strip()
-        if name == '':
-            break
+    for url in urls:
+        name = url.strip()
         names.append(name.split('/')[-1])
 
     offset = 0
