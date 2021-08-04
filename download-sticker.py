@@ -125,7 +125,7 @@ class StickerDownloader:
         return file_path
 
     async def download_sticker_set(self, sticker_set, offset):
-        download_path = assure_folder_exists('waifu', root=self.cwd)
+        download_path = assure_folder_exists('waifus', root=self.cwd)
         downloads = []
 
         print('Starting download of "{}" into {}'.format(sticker_set['name'], download_path))
