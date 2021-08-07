@@ -2,6 +2,7 @@ import os
 import cv2
 import numpy as np
 from PIL import Image
+from pathlib import Path
 
 def imagesDifference( imageA, imageB ):
     A = list(Image.open(imageA, r'r').convert(r'RGB').getdata())
@@ -15,17 +16,19 @@ def imagesDifference( imageA, imageB ):
 def main():
     path, dirs, files = next(os.walk("./stats"))
     file_count = len(files)
-    duplicate_stats = set()
     
     for i in range(file_count):
         first_stat = './stats/stat' + str(i) + '.webp'
-        for j in range(i + 1, file_count):
-            second_stat = './stats/stat' + str(j) + '.webp'
-            difference = imagesDifference(first_stat, second_stat)
+        first_stat_path = Path(first_stat)
+        if first_stat_path.exists():
+            for j in range(i + 1, file_count):
+                second_stat = './stats/stat' + str(j) + '.webp'
+                second_stat_path = Path(second_stat)
 
-            if difference < 5:
-                duplicate_stats.add(second_stat)
-    for val in duplicate_stats:
-        os.remove(val)
+                if second_stat_path.exists():
+                    difference = imagesDifference(first_stat, second_stat)
+
+                    if difference < 5:
+                        os.remove(second_stat)
 
 main()
