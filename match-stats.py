@@ -1,12 +1,10 @@
 import cv2
 import numpy as np
-
+import re
 # from matplotlib import pyplot as plt
 import os
 from PIL import Image
 
-
-stats = ["Armor (Rare)", "Dog Girl (Rare)"]
 colors = [
     "Black",
     "Blonde",
@@ -65,50 +63,69 @@ def hasCurrentColorfulStat(waifu, stat):
   return False
 
 
-path, dirs, files = next(os.walk("./waifus"))
-file_count = len(files)
+def searchWaifus(stats):
+  path, dirs, files = next(os.walk("./waifus"))
+  file_count = len(files)
 
-for i in range(file_count):
-    waifus.append("waifus/waifu" + str(i))
+  for i in range(file_count):
+      waifus.append("waifus/waifu" + str(i))
 
-for waifu in waifus:
-    #print("-------------WAIFU ", waifu)
-    matchingStats = []
-    for stat in stats:
-        #print("TESTING ", stat)
+  for waifu in waifus:
+      #print("-------------WAIFU ", waifu)
+      matchingStats = []
+      for stat in stats:
+          #print("TESTING ", stat)
 
-        if isColorfulStat(stat):
-            if hasCurrentColorfulStat(waifu + ".webp", "stats/" + stat + ".webp"):
-              matchingStats.append(stat)
-        else:
-            convertColor = cv2.COLOR_BGRA2GRAY
-            method = cv2.TM_CCOEFF_NORMED
-            threshold = 0.94
-
-            img = cv2.imread(waifu + ".webp")  # main image
-            img = cv2.cvtColor(img, convertColor)
-
-            template = cv2.imread("stats/" + stat + ".webp")  # subimage
-            template = cv2.cvtColor(template, convertColor)
-
-            result = cv2.matchTemplate(img, template, method)
-
-            #min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
-            loc = np.where(result >= threshold)
-
-            if len(loc[0]) > 0:
-                #(startX, startY) = max_loc
-                #endX = startX + template.shape[1]
-                #endY = startY + template.shape[0]
+          if isColorfulStat(stat):
+              if hasCurrentColorfulStat(waifu + ".webp", "stats/" + stat + ".webp"):
                 matchingStats.append(stat)
+          else:
+              convertColor = cv2.COLOR_BGRA2GRAY
+              method = cv2.TM_CCOEFF_NORMED
+              threshold = 0.94
 
-                #cv2.rectangle(img, (startX, startY), (endX, endY), (255, 0, 0), 3)
+              img = cv2.imread(waifu + ".webp")  # main image
+              img = cv2.cvtColor(img, convertColor)
 
-                ## show the output image
-                #cv2.imshow("Output", img)
-                #cv2.waitKey(0)
+              template = cv2.imread("stats/" + stat + ".webp")  # subimage
+              template = cv2.cvtColor(template, convertColor)
 
-    #print("-------------")
-    if len(matchingStats) > 1:
-        print(waifu, "matches the", len(matchingStats), " stats:", matchingStats)
-        #input()
+              result = cv2.matchTemplate(img, template, method)
+
+              #min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
+              loc = np.where(result >= threshold)
+
+              if len(loc[0]) > 0:
+                  #(startX, startY) = max_loc
+                  #endX = startX + template.shape[1]
+                  #endY = startY + template.shape[0]
+                  matchingStats.append(stat)
+
+                  #cv2.rectangle(img, (startX, startY), (endX, endY), (255, 0, 0), 3)
+
+                  ## show the output image
+                  #cv2.imshow("Output", img)
+                  #cv2.waitKey(0)
+
+      #print("-------------")
+      if len(matchingStats) > 0:
+          print(waifu, "matches the", len(matchingStats), " stats:", matchingStats)
+          #input()
+
+def main():
+  stat_hunt = ""
+  print("Please paste the message from Stat Hunt. Type 0 to finish. ")
+  while True:
+    current_line = input()
+    stat_hunt += current_line + "\n"
+    if current_line == "0":
+      break
+  
+  print(stat_hunt)
+  stats = re.findall('(?:- )([^\n]+)', stat_hunt)
+  search_stats = list(filter(lambda stat: stat.find("✅") == -1, stats))
+  clean_stats = list(map(lambda stat: stat[:-1], search_stats))
+  
+  searchWaifus(clean_stats)
+
+main()
