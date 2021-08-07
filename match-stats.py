@@ -4,6 +4,7 @@ import re
 # from matplotlib import pyplot as plt
 import os
 from PIL import Image
+import copy
 
 colors = [
     "Black",
@@ -67,6 +68,8 @@ def searchWaifus(stats):
   path, dirs, files = next(os.walk("./waifus"))
   file_count = len(files)
 
+  print("Searching waifus...")
+
   for i in range(file_count):
       waifus.append("waifus/waifu" + str(i))
 
@@ -109,13 +112,68 @@ def searchWaifus(stats):
 
       #print("-------------")
       if len(matchingStats) > 0:
-          print(waifu, "matches the", len(matchingStats), " stats:", matchingStats)
+          #print(waifu, "matches the", len(matchingStats), " stats:", matchingStats)
+          yield matchingStats
           #input()
 
 def cleanUpStat(stat):
   if stat[:-1] == ' ':
     return stat[:-1]
   return stat
+
+def removeElementsFromStats (combination, copy_stats):
+    for stat in combination:
+        if stat in copy_stats:
+          copy_stats.remove(stat)
+
+def removeStats(starting_combination, copy_stats, copy_combinations, stats_number):
+    wasCombinationAdded = False
+    j = 0
+    while j < len(copy_combinations) and len(copy_stats) > 0:
+        for stat in starting_combination:
+            #print("TESTING ", stat)
+            #print(copy_combinations[j])
+            if stat in copy_combinations[j]:
+                if stat in copy_stats:
+                    removeElementsFromStats(starting_combination, copy_stats)
+                    if wasCombinationAdded == False:
+                        stats_number.append(len(starting_combination))
+                        wasCombinationAdded = True
+                copy_combinations[j].remove(stat)
+        #print("AFTER REMOVING: ", copy_combinations[j])
+        j = j + 1
+
+def bestCombination(stats, combinations):
+  possibleCombinations = {}
+
+  for i in range(len(combinations)):
+    copy_stats = stats.copy()
+    copy_combinations = copy.deepcopy(combinations)
+    #print("COPY COMBINATION before:\t", copy_combinations)
+    copy_combinations = copy_combinations[i+1::]
+
+    if len(copy_combinations) > 0:
+        #print("COPY COMBINATION after :\t", copy_combinations)
+
+        stats_number = []
+
+        starting_combination = combinations[i]
+        while len(starting_combination) > 0 and len(copy_stats) > 0:
+            removeStats(starting_combination, copy_stats, copy_combinations, stats_number)
+            copy_combinations = sorted(copy_combinations, key=len, reverse=True)
+            #print("REMAINING STATS: ", copy_stats)
+            #print("COMBINATIONS: ", copy_combinations)
+            starting_combination = copy_combinations[0]
+        if len(copy_stats) == 0:
+            #print("--------COMBINATION ", i, "--------")
+            #print(stats_number)
+            total = 0
+            for n in stats_number:
+                total += n * 10 + (n - 1) * 10
+            #print(total)
+            if total not in possibleCombinations:
+                possibleCombinations[total] = stats_number
+  return possibleCombinations
 
 def main():
   stat_hunt = ""
@@ -131,6 +189,9 @@ def main():
   search_stats = list(filter(lambda stat: stat.find("✅") == -1, stats))
   clean_stats = list(map(lambda stat: cleanUpStat(stat), search_stats))
   
-  searchWaifus(clean_stats)
+  matching_waifus_stats = sorted(searchWaifus(clean_stats), key=len, reverse=True)
+
+  print(bestCombination(clean_stats, matching_waifus_stats))
+
 
 main()
