@@ -112,6 +112,11 @@ def searchWaifus(stats):
           print(waifu, "matches the", len(matchingStats), " stats:", matchingStats)
           #input()
 
+def cleanUpStat(stat):
+  if stat[:-1] == ' ':
+    return stat[:-1]
+  return stat
+
 def main():
   stat_hunt = ""
   print("Please paste the message from Stat Hunt. Type 0 to finish. ")
@@ -124,7 +129,7 @@ def main():
   print(stat_hunt)
   stats = re.findall('(?:- )([^\n]+)', stat_hunt)
   search_stats = list(filter(lambda stat: stat.find("✅") == -1, stats))
-  clean_stats = list(map(lambda stat: stat[:-1], search_stats))
+  clean_stats = list(map(lambda stat: cleanUpStat(stat), search_stats))
   
   searchWaifus(clean_stats)
 
