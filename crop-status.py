@@ -20,7 +20,7 @@ def crop(image_path, coords, offset):
 
 def main():
     offset = 0
-    for filename in glob.glob('waifu/*.webp'): 
+    for filename in glob.glob('waifus/*.webp'): 
         offset += crop(filename, (444, 0, 512, 512), offset)
 
 main()
