@@ -8,6 +8,7 @@ import random
 from PIL import Image
 import asyncio
 import base64
+from concurrent.futures import as_completed, ThreadPoolExecutor
 
 TOKEN = ''
 
@@ -51,14 +52,14 @@ class StickerDownloader:
             print('API method {} failed. Error: "{}"'.format(fstring, e))
             return None
 
-    async def get_file(self, file_id):
+    def get_file(self, file_id):
         info = self._api_request('getFile', {'file_id': file_id})
         f = File(name=info['result']['file_path'].split('/')[-1],
                  link='https://api.telegram.org/file/bot{}/{}'.format(self.token, info['result']['file_path']))
 
         return f
 
-    async def get_sticker_set(self, name):
+    def get_sticker_set(self, name):
         """
         Get a list of File objects.
         :param name:
@@ -74,14 +75,14 @@ class StickerDownloader:
         start = time.time()
         stickers_blobs = []
 
-        for i in stickers:
-            file = await self.get_file(i['file_id'])
-            files.append(file)
+        #for i in stickers:
+        #    file = await self.get_file(i['file_id'])
+        #    files.append(file)
 
-        #with ThreadPoolExecutor(max_workers=self.THREADS) as executor:
-        #    futures = [executor.submit(self.get_file, i['file_id']) for i in stickers]
-        #    for i in as_completed(futures):
-        #        files.append(i.result())
+        with ThreadPoolExecutor(max_workers=self.THREADS) as executor:
+            futures = [executor.submit(self.get_file, i['file_id']) for i in stickers]
+            for i in as_completed(futures):
+                files.append(i.result())
 
         end = time.time()
         print('Time taken to scrape {} stickers - {:.3f}s'.format(len(files), end - start))
