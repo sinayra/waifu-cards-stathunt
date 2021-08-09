@@ -4,13 +4,14 @@ from firebase import firebase
 from download_sticker import StickerDownloader
 from match_stats import searchWaifus
 from flask_caching import Cache
+from decouple import config
 
 #from PIL import Image
 #from io import BytesIO
 #import base64
 
 app = flask.Flask(__name__)
-app.config["DEBUG"] = True
+#app.config["DEBUG"] = True
 
 
 cache = Cache(app, config={'CACHE_TYPE': 'SimpleCache'})
@@ -34,9 +35,7 @@ def stats():
 @app.route('/api/v1/stickers/<deck>', methods=['GET'])
 @cache.cached(timeout=5000)
 def stickers(deck):
-    #result = firebase.get('/stats', None)
-    #return jsonify(result)
-    downloader = StickerDownloader()
+    downloader = StickerDownloader(config('TELEGRAM_TOKEN'))
     stickers = downloader.get_sticker_set(deck)
     stats = getAllStats()
 

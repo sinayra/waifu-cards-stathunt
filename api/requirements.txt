@@ -1,4 +1,4 @@
 requests
 python-firebase
-flask[async]
-Flask-Caching
+flask-caching
+python-decouple

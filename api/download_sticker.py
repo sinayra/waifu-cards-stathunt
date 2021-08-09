@@ -10,7 +10,6 @@ import asyncio
 import base64
 from concurrent.futures import as_completed, ThreadPoolExecutor
 
-TOKEN = ''
 
 class File:
     def __init__(self, name, link):
@@ -21,9 +20,9 @@ class File:
         return '<F:{}>'.format(self.name)
 
 class StickerDownloader:
-    def __init__(self, session=None, multithreading=4):
+    def __init__(self, token, session=None, multithreading=4):
         self.THREADS = multithreading
-        self.token = TOKEN
+        self.token = token
         self.cwd = os.getcwd()
         if session is None:
             self.session = requests.Session()

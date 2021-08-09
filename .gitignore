@@ -1,3 +1,4 @@
 *.png
 *.webp
 */__pycache__
+.env
