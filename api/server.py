@@ -5,9 +5,9 @@ from download_sticker import StickerDownloader
 from match_stats import searchWaifus
 from flask_caching import Cache
 
-from PIL import Image
-from io import BytesIO
-import base64
+#from PIL import Image
+#from io import BytesIO
+#import base64
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
