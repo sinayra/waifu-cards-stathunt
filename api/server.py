@@ -45,5 +45,3 @@ def stickers(deck):
     #im = Image.open(BytesIO(base64.b64decode(stickers[0]["data"])))
     #im.show()
     #return "<h1>Hello</h1>"
-
-app.run()
