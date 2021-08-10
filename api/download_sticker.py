@@ -3,10 +3,6 @@ import json
 import urllib.parse
 import time
 import os
-import string
-import random
-from PIL import Image
-import asyncio
 import base64
 from concurrent.futures import as_completed, ThreadPoolExecutor
 
