@@ -2,3 +2,4 @@
 *.webp
 */__pycache__
 .env
+*.json

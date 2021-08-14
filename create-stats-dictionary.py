@@ -1,6 +1,7 @@
 from os import listdir
 from os.path import isfile, join
 import base64
+import json
 
 stats_folder = './stats/'
 stats_filenames = [f for f in listdir(stats_folder) if isfile(join(stats_folder, f))]
@@ -13,4 +14,10 @@ for stat_filename in stats_filenames:
     obj["data"] = data.decode("utf-8")
 
     stats.append(obj)
-print(stats)
+
+file = open("stats.json", "w")
+
+stats_obj = {}
+stats_obj["stats"] = stats
+file.write(json.dumps(stats_obj))
+file.close()
