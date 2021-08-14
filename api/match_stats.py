@@ -17,6 +17,8 @@ colors = [
     "Violet",
     "Yellow",
     "White",
+    "Orange",
+    "Grey"
 ]
 
 def isColorfulStat(stat):
