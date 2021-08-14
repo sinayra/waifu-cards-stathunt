@@ -61,13 +61,16 @@ class StickerDownloader:
         :return:
         """
         params = {'name': name}
+        if ("_by_WaifuCardsBot" not in name):
+            return None
+
         res = self._api_request('getStickerSet', params)
         if res is None:
             return None
         stickers = res['result']['stickers']
         files = []
-        print('Starting to scrape "{}" ..'.format(name))
-        start = time.time()
+        #print('Starting to scrape "{}" ..'.format(name))
+        #start = time.time()
         stickers_blobs = []
 
         #for i in stickers:
@@ -79,9 +82,9 @@ class StickerDownloader:
             for i in as_completed(futures):
                 files.append(i.result())
 
-        end = time.time()
-        print('Time taken to scrape {} stickers - {:.3f}s'.format(len(files), end - start))
-        print()
+        #end = time.time()
+        #print('Time taken to scrape {} stickers - {:.3f}s'.format(len(files), end - start))
+        #print()
 
         sticker_set = {
             'name': res['result']['name'].lower(),
@@ -90,12 +93,9 @@ class StickerDownloader:
         }
 
         for f in sticker_set['files']:
-            obj = {}
             res = self.session.get(f.link)
 
-            obj["name"] = f.name
-            obj["data"] = base64.b64encode(res.content)
-            stickers_blobs.append(obj)
+            stickers_blobs.append(base64.b64encode(res.content).decode("utf-8"))
 
         return stickers_blobs
 

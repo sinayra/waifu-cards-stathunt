@@ -4,6 +4,7 @@ import numpy as np
 from PIL import Image
 from io import BytesIO
 import base64
+from concurrent.futures import as_completed, ThreadPoolExecutor
 
 colors = [
     "Black",
@@ -20,6 +21,27 @@ colors = [
     "Orange",
     "Grey"
 ]
+
+clothes = [
+    "Japanese-style Clothes (Rare)",
+    "Japanese-style Clothes",
+    "Maid (Rare)",
+    "School Uniform",
+    "Swimsuit",
+]
+
+socks = [
+    "Japanese-style Clothes (Rare)",
+    "Japanese-style Clothes",
+    "Maid (Rare)",
+    "School Uniform",
+]
+shoes = [
+    "Barefoot (Rare)",
+    "Boots (Rare)",
+    "High Heels (Rare)",
+]
+
 
 def isColorfulStat(stat):
     for color in colors:
@@ -54,9 +76,17 @@ def hasCurrentStat(waifu, stat):
           return True
   return False
 
-def cropStats(waifu):
+def hasMax2Pieces(machingStats, piece):
+    stats = filter(lambda stat: piece in stat, machingStats)
+
+    return stats == 2
+
+def hasMax1Piece(machingStats, piece):
+    return set(machingStats) & set(piece)
+
+def cropStats(waifu_data):
     coords = (444, 0, 512, 512)
-    image_obj = Image.open(BytesIO(base64.b64decode(waifu["data"])))
+    image_obj = Image.open(BytesIO(base64.b64decode(waifu_data)))
 
     return image_obj.crop(coords)
 
@@ -64,25 +94,32 @@ def addStatsImages(stats):
     for stat in stats:
         stat["image"] = Image.open(BytesIO(base64.b64decode(stat["data"])))
 
-def searchWaifus(waifus, stats):
-  waifus_stats = []
-  addStatsImages(stats)
-
-  for waifu in waifus:
-      #print("-------------WAIFU ", waifu["name"])
-      cropped_waifu = cropStats(waifu)
-      matchingStats = []
-      totalStats = 0
-      for stat in stats:
-        if hasCurrentStat(cropped_waifu, stat["image"]):
-            matchingStats.append(stat["name"])
-            totalStats = totalStats + 1
+def matchStats(waifu_data, stats):
+    addStatsImages(stats)
+    cropped_waifu = cropStats(waifu_data)
+    matchingStats = []
+    totalStats = 0
+    for stat in stats:
         if totalStats == 7:
             break
         
-      obj = {}
-      obj["name"] = waifu["name"]
-      obj["data"] = waifu["data"].decode("utf-8")
-      obj["stats"] = matchingStats
-      waifus_stats.append(obj)
-  return waifus_stats
+        if "Eyes" in stat and hasMax2Pieces(matchingStats, "Eyes"):
+            break
+        
+        if "Girl" in stat and hasMax2Pieces(matchingStats, "Girl"):
+            break
+
+        if stat in clothes and hasMax1Piece(matchingStats, clothes):
+            break
+
+        if stat in shoes and hasMax1Piece(matchingStats, shoes):
+            break
+
+        if stat in socks and hasMax1Piece(matchingStats, socks):
+            break
+
+        if hasCurrentStat(cropped_waifu, stat["image"]):
+            matchingStats.append(stat["name"])
+            totalStats = totalStats + 1
+
+    return matchingStats
