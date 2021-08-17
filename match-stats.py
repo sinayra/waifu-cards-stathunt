@@ -18,6 +18,8 @@ colors = [
     "Violet",
     "Yellow",
     "White",
+    "Orange",
+    "Grey"
 ]
 
 waifus = []
@@ -112,7 +114,7 @@ def searchWaifus(stats):
 
       #print("-------------")
       if len(matchingStats) > 0:
-          #print(waifu, "matches the", len(matchingStats), " stats:", matchingStats)
+          print(waifu, "matches the", len(matchingStats), " stats:", matchingStats)
           yield matchingStats
           #input()
 
